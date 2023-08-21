@@ -1,0 +1,22 @@
+FROM python:3.10 AS base
+
+FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PATH=/usr/local/bin:$PATH \
+    PYTHON_VERSION=3.10.0
+COPY --from=base /usr/local/lib /usr/local/lib
+COPY --from=base /usr/local/bin /usr/local/bin
+COPY --from=base /usr/local/include/python3.10 /usr/local/include/python3.10
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    ca-certificates \
+    wget \
+    libglib2.0-0 \
+    libgl1
+RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
+# RUN pip install --no-cache-dir --upgrade pip # add this when you are in China mainland.
